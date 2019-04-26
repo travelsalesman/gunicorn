@@ -89,7 +89,7 @@ class EventletWorker(AsyncWorker):
 
     def patch(self):
         hubs.use_hub()
-        eventlet.monkey_patch(os=False)
+        eventlet.monkey_patch(select=True, socket=True, subprocess=True, time=True, thread=True, MySQLdb=True)
         patch_sendfile()
 
     def is_already_handled(self, respiter):
@@ -99,8 +99,8 @@ class EventletWorker(AsyncWorker):
             return super(EventletWorker, self).is_already_handled(respiter)
 
     def init_process(self):
-        super(EventletWorker, self).init_process()
         self.patch()
+        super(EventletWorker, self).init_process()
 
     def handle_quit(self, sig, frame):
         eventlet.spawn(super(EventletWorker, self).handle_quit, sig, frame)
